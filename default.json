@@ -1,0 +1,120 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "labels": ["dependencies"],
+    "extends": ["config:base"],
+    "ignorePresets": [
+      "group:jestMonorepo"
+    ],
+    "timezone": "Asia/Tokyo",
+    "rangeStrategy": "replace",
+    "lockFileMaintenance": {
+      "enabled": true
+    },
+    "branchConcurrentLimit": 0,
+    "packageRules": [
+      {
+        "groupName": "Nx Support Packages",
+        "packagePatterns": [
+          "^eslint$",
+          "^eslint-config-prettier$",
+          "^jest-preset-angular$",
+          "^ts-jest$",
+          "^jest$",
+          "^@ngrx/",
+          "^@angular-eslint/",
+          "^@typescript-eslint/"
+        ],
+        "enabled": false
+      },
+      {
+        "groupName": "@nrwl/nx workspace group (disabled)",
+        "matchSourceUrlPrefixes": ["https://github.com/nrwl/nx"],
+        "enabled": false
+      },
+      {
+        "groupName": "@angular/core package group (major or minor)",
+        "matchSourceUrlPrefixes": ["https://github.com/angular/angular"],
+        "matchUpdateTypes": ["major", "minor"],
+        "enabled": false
+      },
+      {
+        "groupName": "@angular/cli package group (major or minor)",
+        "matchPackageNames": [
+          "@angular/cli",
+          "@angular-devkit/architect",
+          "@angular-devkit/build-angular",
+          "@angular-devkit/build-webpack",
+          "@angular-devkit/core",
+          "@angular-devkit/schematics"
+        ],
+        "matchUpdateTypes": ["major", "minor"],
+        "enabled": false
+      },
+      {
+        "groupName": "typescript (major or minor)",
+        "matchPackageNames": ["typescript"],
+        "matchUpdateTypes": ["major", "minor"],
+        "enabled": false
+      },
+      {
+        "groupName": "rxjs (major)",
+        "matchPackageNames": ["rxjs"],
+        "matchUpdateTypes": ["major", "minor"],
+        "enabled": false
+      },
+      {
+        "groupName": "@types packages group (minor or patch)",
+        "matchPackagePatterns": ["^@types/"],
+        "matchUpdateTypes": ["minor", "patch"],
+        "automerge": true
+      },
+      {
+        "groupName": "@nrwl/nx workspace group (major or minor)",
+        "packageNames": ["@nrwl/workspace"],
+        "matchPackageNames": ["@nrwl/workspace"],
+        "matchUpdateTypes": ["major", "minor", "patch"],
+        "enabled": true,
+        "postUpgradeTasks": {
+          "commands": [
+            "(cd frontend && NG_CLI_ANALYTICS=ci npm ci --ignore-scripts)",
+            "(cd frontend && npx nx migrate @nrwl/workspace@{{{newVersion}}} --from=\"@nrwl/workspace@{{{currentVersion}}}\")",
+            "(cd frontend && NG_CLI_ANALYTICS=ci npm i --ignore-scripts)",
+            "(cd frontend && sh nx-run-migrations.sh)"
+          ],
+          "fileFilters": ["**/**"]
+        }
+      },
+      {
+        "groupName": "@angular/material package group (major or minor)",
+        "matchUpdateTypes": ["major", "minor"],
+        "matchPackageNames": [
+          "@angular/material",
+          "@angular/cdk"
+        ],
+        "enabled": true,
+        "postUpgradeTasks": {
+          "commands": [
+            "(cd frontend && NG_CLI_ANALYTICS=ci npm ci --ignore-scripts)",
+            "(cd frontend && FORCE_NG_UPDATE=true npx ng update {{{depName}}} --from={{{currentVersion}}} --to={{{newVersion}}} --migrate-only --allowDirty --force)"
+          ],
+          "fileFilters": ["**/**"]
+        }
+      },
+      {
+        "groupName": "@angular/material package group (patch)",
+        "matchPackageNames": [
+          "@angular/material",
+          "@angular/cdk"
+        ],
+        "matchUpdateTypes": ["patch"],
+        "enabled": true
+      },
+      {
+        "packageNames": ["cypress"],
+        "matchPackageNames": ["cypress"],
+        "matchUpdateTypes": ["major", "minor", "patch"],
+        "enabled": true,
+        "groupName": "Cypress"
+      }
+    ]
+  }
